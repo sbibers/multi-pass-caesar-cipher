@@ -42,10 +42,10 @@ Step 5 (swap):prjkr  ← Final encrypted result
 
 ```bash
 # Compile
-c++ test.cpp -o encrypt
+c++ multi-pass-caesar-cipher.cpp -o multi-pass-caesar-cipher
 
 # Run
-./encrypt
+./multi-pass-caesar-cipher
 ```
 
 ## Output Example
