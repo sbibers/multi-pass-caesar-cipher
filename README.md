@@ -86,23 +86,6 @@ Even: key = (i * 7 + 3) % 26
 Odd:  key = (i * 11 + 9) % 26
 ```
 
-## Security Note
-
-⚠️ **This is NOT cryptographically secure.** 
-
-This algorithm is suitable for:
-- Learning about cryptography
-- Simple text obfuscation
-- Fun/educational projects
-
-**Do NOT use for:**
-- Passwords
-- Sensitive data
-- Financial information
-- Anything requiring real security
-
-For real security, use established encryption libraries like OpenSSL with AES.
-
 ## License
 
 MIT License - Feel free to use and modify.
