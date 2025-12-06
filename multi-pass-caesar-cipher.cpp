@@ -235,35 +235,20 @@ std::string decrypt(const std::string &text)
 
 void execution(const std::string &input_file, const std::string &output_file, const std::string &content, bool mode)
 {
-    std::string result;
-    if (mode)
+    if (content.empty())
     {
-        if (content.empty())
-        {
-            throw std::runtime_error("Encryption failed: Input text is empty.");
-        }
-        std::cout << "Encrypting..." << std::endl;
-        auto start = std::chrono::high_resolution_clock::now();
-        result = encrypt(content);
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "Encryption complete in " << duration << " ms.\n";
-        std::cout << "Outfile created: " << output_file << ".\n";
+        throw std::runtime_error((mode ? "Encryption" : "Decryption") + std::string(" failed: Input text is empty."));
     }
-    else
-    {
-        if (content.empty())
-        {
-            throw std::runtime_error("Decryption failed: Input text is empty.");
-        }
-        std::cout << "Decrypting..." <<  std::endl;
-        auto start = std::chrono::high_resolution_clock::now();
-        result = decrypt(content);
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "Decryption complete in " << duration << " ms.\n";
-        std::cout << "Outfile created: " << output_file << ".\n";
-    }
+
+    std::cout << (mode ? "Encrypting..." : "Decrypting...") << std::endl;
+    
+    auto start = std::chrono::high_resolution_clock::now();
+    std::string result = mode ? encrypt(content) : decrypt(content);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    
+    std::cout << (mode ? "Encryption" : "Decryption") << " complete in " << duration << " ms.\n";
+    std::cout << "Outfile created: " << output_file << ".\n";
 
     FILE *file = fopen(output_file.c_str(), "w");
     if (!file)
@@ -323,19 +308,12 @@ int main(int argc, char *argv[])
             output_file = input_file + suffix;
         }
         
-        if (mode == "-e")
-        {
-            execution(input_file, output_file, content, true);
-        }
-        else if (mode == "-d")
-        {
-            execution(input_file, output_file, content, false);
-        }
-        else
+        if (mode != "-e" && mode != "-d")
         {
             std::cerr << "Invalid mode. Use -e for encrypt or -d for decrypt.\n";
             return (1);
         }
+        execution(input_file, output_file, content, mode == "-e");
     }
     catch (const std::exception &e)
     {
