@@ -70,7 +70,7 @@ std::string encrypt(const std::string &text)
             continue;
         }
         int pos = c - offset;
-        int next = (i < (int)shifted.size() - 1 && isalpha(shifted[i+1])) ? (shifted[i+1] % 26) : 0;
+        int next = (i < (int)shifted.size() - 1 && isalpha(shifted[i + 1])) ? (shifted[i + 1] % 26) : 0;
         int key = (i * 5 + next + 11) % 26;
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
@@ -190,7 +190,7 @@ std::string decrypt(const std::string &text)
             continue;
         }
         int pos = c - offset;
-        int next = (i < out.size() - 1 && isalpha(out[i+1])) ? (out[i+1] % 26) : 0;
+        int next = (i < out.size() - 1 && isalpha(out[i + 1])) ? (out[i + 1] % 26) : 0;
         int key = (i * 5 + next + 11) % 26;
         int dec_pos = (pos - key + 26) % 26;
         out[i] = dec_pos + offset;
@@ -233,7 +233,7 @@ std::string decrypt(const std::string &text)
     return (out);
 }
 
-void execution(const std::string &inputFile, const std::string &outputFile, const std::string &content, bool mode)
+void execution(const std::string &input_file, const std::string &output_file, const std::string &content, bool mode)
 {
     std::string result;
     if (mode)
@@ -244,7 +244,7 @@ void execution(const std::string &inputFile, const std::string &outputFile, cons
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         std::cout << "Encryption complete in " << duration << " ms.\n";
-        std::cout << "Outfile created: " << outputFile << ".\n";
+        std::cout << "Outfile created: " << output_file << ".\n";
     }
     else
     {
@@ -254,13 +254,13 @@ void execution(const std::string &inputFile, const std::string &outputFile, cons
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
         std::cout << "Decryption complete in " << duration << " ms.\n";
-        std::cout << "Outfile created: " << outputFile << ".\n";
+        std::cout << "Outfile created: " << output_file << ".\n";
     }
 
-    FILE *file = fopen(outputFile.c_str(), "w");
+    FILE *file = fopen(output_file.c_str(), "w");
     if (!file)
     {
-        throw std::runtime_error("Could not open file for writing: " + outputFile);
+        throw std::runtime_error("Could not open file for writing: " + output_file);
     }
     for (char c : result)
     {
@@ -269,13 +269,13 @@ void execution(const std::string &inputFile, const std::string &outputFile, cons
     fclose(file);
 }
 
-std::string read_file(const std::string &filename)
+std::string read_file(const std::string &file_name)
 {
     std::string content;
-    FILE *file = fopen(filename.c_str(), "r");
+    FILE *file = fopen(file_name.c_str(), "r");
     if (!file)
     {
-        throw std::runtime_error("Could not open file for reading: " + filename);
+        throw std::runtime_error("Could not open file for reading: " + file_name);
     }
     char ch;
     while ((ch = fgetc(file)) != EOF)
@@ -296,18 +296,32 @@ int main(int argc, char *argv[])
             return (1);
         }
         std::string mode = argv[1];
-        std::string inputFile = argv[2];
+        std::string input_file = argv[2];
         std::string content = read_file(argv[2]);
-        std::string outputFile;
+        std::string output_file;
+        
+        // generate output filename with suffix before extension.
+        // input.txt -> input_encrypted.txt or input_decrypted.txt
+        std::string suffix = (mode == "-e") ? "_encrypted" : "_decrypted";
+        size_t dot_pos = input_file.find_last_of('.');
+        if (dot_pos != std::string::npos)
+        {
+            // Has extension: input.txt -> input_encrypted.txt
+            output_file = input_file.substr(0, dot_pos) + suffix + input_file.substr(dot_pos);
+        }
+        else
+        {
+            // no extension: input -> input_encrypted
+            output_file = input_file + suffix;
+        }
+        
         if (mode == "-e")
         {
-            outputFile = inputFile + "_encrypted.txt";
-            execution(inputFile, outputFile, content, true);
+            execution(input_file, output_file, content, true);
         }
         else if (mode == "-d")
         {
-            outputFile = inputFile + "_decrypted.txt";
-            execution(inputFile, outputFile, content, false);
+            execution(input_file, output_file, content, false);
         }
         else
         {
