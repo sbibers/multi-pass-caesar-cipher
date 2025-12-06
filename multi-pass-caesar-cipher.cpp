@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
         std::string content = read_file(argv[2]);
         if (content.empty())
         {
-            std::cerr << "Input file is empty or could not be read.\n";
+            std::cerr << "Input file is empty.\n";
             return (1);
         }
         std::string output_file;
