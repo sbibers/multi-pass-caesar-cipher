@@ -37,27 +37,52 @@ Step 5 (swap):prjkr  ← Final encrypted result
 - ✅ Position-dependent keys
 - ✅ Character dependency between positions
 - ✅ Fully reversible decryption
+- ✅ File input/output support
+- ✅ Exception handling for errors
+- ✅ Automatic output filename generation
 
 ## Build & Run
 
 ```bash
 # Compile
-c++ multi-pass-caesar-cipher.cpp -o multi-pass-caesar-cipher
+c++ multi-pass-caesar-cipher.cpp -o cipher
 
-# Run
-./multi-pass-caesar-cipher
+# Encrypt a file
+./cipher -e input.txt
+# Output: input_encrypted.txt
+
+# Decrypt a file
+./cipher -d input_encrypted.txt
+# Output: input_encrypted_decrypted.txt
+```
+
+## Usage
+
+```
+Usage: ./cipher <mode> <input_file>
+Modes:
+  -e  Encrypt the input file
+  -d  Decrypt the input file
+Output:
+  Encrypt: input.txt -> input_encrypted.txt
+  Decrypt: input.txt -> input_decrypted.txt
+Example:
+  ./cipher -e plaintext.txt
+  ./cipher -d encrypted.txt
 ```
 
 ## Output Example
 
 ```
-Original: ahmad
-Encrypted: prjkr
-Decrypted: ahmad
+Reading input file: test.txt
+File size: 5 bytes
+Encrypting...
+Writing output file: test_encrypted.txt
 -------------------------------
-Original: Hello World
-Encrypted: <encrypted_text>
-Decrypted: Hello World
+Operation completed successfully!
+Time taken: 0 ms
+Input file: test.txt
+Output file: test_encrypted.txt
 ```
 
 ## Performance
@@ -85,6 +110,23 @@ key = (i * 5 + next_char + 11) % 26
 Even: key = (i * 7 + 3) % 26
 Odd:  key = (i * 11 + 9) % 26
 ```
+
+## Security Note
+
+⚠️ **This is NOT cryptographically secure.**
+
+This algorithm is suitable for:
+- Learning about cryptography
+- Simple text obfuscation
+- Fun/educational projects
+
+**Do NOT use for:**
+- Passwords
+- Sensitive data
+- Financial information
+- Anything requiring real security
+
+For real security, use established encryption libraries like OpenSSL with AES.
 
 ## License
 

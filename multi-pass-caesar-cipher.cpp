@@ -233,23 +233,82 @@ std::string decrypt(const std::string &text)
     return (out);
 }
 
-int main()
+void execution(const std::string &inputFile, const std::string &outputFile, const std::string &content, bool mode)
 {
-    std::string text = "ahmad";
-    std::cout << "Original: " << text << std::endl;
+    std::string result;
+    if (mode)
+    {
+        std::cout << "Encrypting..." << std::endl;
+        result = encrypt(content);
+    }
+    else
+    {
+        std::cout << "Decrypting..." <<  std::endl;
+        result = decrypt(content);
+    }
 
-    std::string encrypted = encrypt(text);
-    std::cout << "Encrypted: " << encrypted << std::endl;
-    
-    std::string decrypted = decrypt(encrypted);
-    std::cout << "Decrypted: " << decrypted << std::endl;
-    std::cout << "-------------------------------\n";
-    std::string text2 = "Hello World";
-    std::cout << "Original: " << text2 << std::endl;
-    std::string encrypted2 = encrypt(text2);
-    std::cout << "Encrypted: " << encrypted2 << std::endl;
-    std::string decrypted2 = decrypt(encrypted2);
-    std::cout << "Decrypted: " << decrypted2 << std::endl;
-    
+    FILE *file = fopen(outputFile.c_str(), "w");
+    if (!file)
+    {
+        throw std::runtime_error("Could not open file for writing: " + outputFile);
+    }
+    for (char c : result)
+    {
+        fputc(c, file);
+    }
+    fclose(file);
+}
+
+std::string read_file(const std::string &filename)
+{
+    std::string content;
+    FILE *file = fopen(filename.c_str(), "r");
+    if (!file)
+    {
+        throw std::runtime_error("Could not open file for reading: " + filename);
+    }
+    char ch;
+    while ((ch = fgetc(file)) != EOF)
+    {
+        content += ch;
+    }
+    fclose(file);
+    return (content);
+}
+
+int main(int argc, char *argv[])
+{
+    try
+    {
+        if (argc != 3)
+        {
+            std::cerr << "Usage: " << argv[0] << " <-e | -d> <inputfile>\n";
+            return (1);
+        }
+        std::string mode = argv[1];
+        std::string inputFile = argv[2];
+        std::string content = read_file(argv[2]);
+        std::string outputFile;
+        if (mode == "-e")
+        {
+            outputFile = inputFile + "_encrypted.txt";
+            execution(inputFile, outputFile, content, true);
+        }
+        else if (mode == "-d")
+        {
+            outputFile = inputFile + "_decrypted.txt";
+            execution(inputFile, outputFile, content, false);
+        }
+        else
+        {
+            std::cerr << "Invalid mode. Use -e for encrypt or -d for decrypt.\n";
+            return (1);
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return (1);
+    }
     return (0);
 }
