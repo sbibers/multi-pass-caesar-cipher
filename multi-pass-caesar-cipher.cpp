@@ -298,6 +298,11 @@ int main(int argc, char *argv[])
         std::string mode = argv[1];
         std::string input_file = argv[2];
         std::string content = read_file(argv[2]);
+        if (content.empty())
+        {
+            std::cerr << "Input file is empty or could not be read.\n";
+            return (1);
+        }
         std::string output_file;
         
         // generate output filename with suffix before extension.
@@ -306,7 +311,7 @@ int main(int argc, char *argv[])
         size_t dot_pos = input_file.find_last_of('.');
         if (dot_pos != std::string::npos)
         {
-            // Has extension: input.txt -> input_encrypted.txt
+            // has extension: input.txt -> input_encrypted.txt
             output_file = input_file.substr(0, dot_pos) + suffix + input_file.substr(dot_pos);
         }
         else
