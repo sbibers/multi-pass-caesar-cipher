@@ -239,12 +239,22 @@ void execution(const std::string &inputFile, const std::string &outputFile, cons
     if (mode)
     {
         std::cout << "Encrypting..." << std::endl;
+        auto start = std::chrono::high_resolution_clock::now();
         result = encrypt(content);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "Encryption complete in " << duration << " ms.\n";
+        std::cout << "Outfile created: " << outputFile << ".\n";
     }
     else
     {
         std::cout << "Decrypting..." <<  std::endl;
+        auto start = std::chrono::high_resolution_clock::now();
         result = decrypt(content);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "Decryption complete in " << duration << " ms.\n";
+        std::cout << "Outfile created: " << outputFile << ".\n";
     }
 
     FILE *file = fopen(outputFile.c_str(), "w");
@@ -312,3 +322,5 @@ int main(int argc, char *argv[])
     }
     return (0);
 }
+
+// yes "abcdefghijklmnopqrstuvwxyz" | head -c 1G > bigfile.txt -> command to create a 1GB file for testing.
