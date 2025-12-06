@@ -14,7 +14,6 @@ std::string encrypt(const std::string &text)
     // "ahmad" -> "damha"
     std::reverse(shifted.begin(), shifted.end());
 
-    std::cout << "step 1: " << shifted << std::endl;
     // step 2: first pass - forward shift based on position.
     // key = (i * 7 + 5) % 26
     // "damha" -> "imfhh"
@@ -39,7 +38,6 @@ std::string encrypt(const std::string &text)
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
     }
-    std::cout << "step 2: " << shifted << std::endl;
 
     // step 3: second pass - backward, using next character.
     // key = (i * 5 + next + 11) % 26
@@ -66,7 +64,6 @@ std::string encrypt(const std::string &text)
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
     }
-    std::cout << "step 3: " << shifted << std::endl;
 
     // step 4: third pass - different formulas for odd/even positions.
     // even: key = (i * 7 + 3) % 26
@@ -93,7 +90,6 @@ std::string encrypt(const std::string &text)
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
     }
-    std::cout << "step 4: " << shifted << std::endl;
 
     // step 5: Swap adjacent pairs.
     // "puwcr" -> "upcwr"
@@ -102,7 +98,6 @@ std::string encrypt(const std::string &text)
     {
         std::swap(shifted[i], shifted[i + 1]);
     }
-    std::cout << "step 5: " << shifted << std::endl;
 
     return (shifted);
 }
@@ -216,7 +211,7 @@ void execution(const std::string &input_file, const std::string &output_file, co
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     
     std::cout << (mode ? "Encryption" : "Decryption") << " complete in " << duration << " ms.\n";
-    std::cout << "Outfile created: " << output_file << ".\n";
+    std::cout << "Outfile created: " << output_file << std::endl;
 
     FILE *file = fopen(output_file.c_str(), "w");
     if (!file)
