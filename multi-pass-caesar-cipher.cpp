@@ -11,17 +11,13 @@ std::string encrypt(const std::string &text)
     std::string shifted = text;
 
     // step 1: reverse the string.
-    // input: "ahmad" -> after reverse: "damha"
+    // "ahmad" -> "damha"
     std::reverse(shifted.begin(), shifted.end());
 
+    std::cout << "step 1: " << shifted << std::endl;
     // step 2: first pass - forward shift based on position.
-    // shifted = "damha"
-    // i=0: 'd'(3) + key(5)  = 8  -> 'i'  | key = (0*7+5)%26 = 5 | enc = (3+5)%26=8 | shifted[i]=8+offset='i'
-    // i=1: 'a'(0) + key(12) = 12 -> 'm'  | key = (1*7+5)%26 = 12 | enc = (0+12)%26=12 | shifted[i]=12+offset='m'
-    // i=2: 'm'(12)+ key(19) = 5  -> 'f'  | key = (2*7+5)%26 = 19 | enc (12+19)%26=5 | shifted[i]=5+offset='f'
-    // i=3: 'h'(7) + key(0)  = 7  -> 'h'  | key = (3*7+5)%26 = 0 | enc = (7+0)%26=7 | shifted[i]=7+offset='h'
-    // i=4: 'a'(0) + key(7)  = 7  -> 'h'  | key = (4*7+5)%26 = 7 | enc = (0+7)%26=7 | shifted[i]=7+offset='h'
-    // result: "imfhh"
+    // key = (i * 7 + 5) % 26
+    // "damha" -> "imfhh"
     for (size_t i = 0; i < shifted.size(); i++)
     {
         char c = shifted[i];
@@ -43,16 +39,11 @@ std::string encrypt(const std::string &text)
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
     }
+    std::cout << "step 2: " << shifted << std::endl;
 
     // step 3: second pass - backward, using next character.
-    // shifted = "imfhh"
-    // i=4: 'h'(7)  + key(11) = 18 -> 's' | next=0 (no next), key=(4*5+0+11)%26=5, wait recalc: (20+0+11)%26=5, (7+5)%26=12->'m'
-    // actually: key = (4*5 + 0 + 11) % 26 = 31 % 26 = 5, enc = (7+5)%26 = 12 -> 'm'
-    // i=3: 'h'(7)  + key=? | next='m'(12), key=(3*5+12+11)%26=(15+12+11)%26=38%26=12, enc=(7+12)%26=19 -> 't'
-    // i=2: 'f'(5)  + key=? | next='t'(19), key=(2*5+19+11)%26=(10+19+11)%26=40%26=14, enc=(5+14)%26=19 -> 't'
-    // i=1: 'm'(12) + key=? | next='t'(19), key=(1*5+19+11)%26=(5+19+11)%26=35%26=9, enc=(12+9)%26=21 -> 'v'
-    // i=0: 'i'(8)  + key=? | next='v'(21), key=(0*5+21+11)%26=32%26=6, enc=(8+6)%26=14 -> 'o'
-    // Result: "ovttm"
+    // key = (i * 5 + next + 11) % 26
+    // "imfhh" -> "mafmm"
     for (int i = shifted.size() - 1; i >= 0; i--)
     {
         char c = shifted[i];
@@ -75,15 +66,12 @@ std::string encrypt(const std::string &text)
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
     }
+    std::cout << "step 3: " << shifted << std::endl;
 
-    // step 4: Third pass - different formulas for odd/even positions.
-    // shifted = "ovttm"
-    // i=0 (even): 'o'(14) + key(3)  = 17 -> 'r' | key = (0*7+3)%26 = 3
-    // i=1 (odd):  'v'(21) + key(20) = 15 -> 'p' | key = (1*11+9)%26 = 20
-    // i=2 (even): 't'(19) + key(17) = 10 -> 'k' | key = (2*7+3)%26 = 17
-    // i=3 (odd):  't'(19) + key(16) = 9  -> 'j' | key = (3*11+9)%26 = 42%26 = 16
-    // i=4 (even): 'm'(12) + key(5)  = 17 -> 'r' | key = (4*7+3)%26 = 31%26 = 5
-    // Result: "rpkjr"
+    // step 4: third pass - different formulas for odd/even positions.
+    // even: key = (i * 7 + 3) % 26
+    // odd:  key = (i * 11 + 9) % 26
+    // "mafmm" -> "puwcr"
     for (size_t i = 0; i < shifted.size(); i++)
     {
         char c = shifted[i];
@@ -105,17 +93,16 @@ std::string encrypt(const std::string &text)
         int enc_pos = (pos + key) % 26;
         shifted[i] = enc_pos + offset;
     }
+    std::cout << "step 4: " << shifted << std::endl;
 
     // step 5: Swap adjacent pairs.
-    // shifted = "rpkjr"
-    // Swap [0] and [1]: 'r' <-> 'p' -> "prkjr"
-    // Swap [2] and [3]: 'k' <-> 'j' -> "prjkr"
-    // [4] has no pair, stays as 'r'
-    // Result: "prjkr"
+    // "puwcr" -> "upcwr"
+    // final result for "ahmad" -> "upcwr"
     for (size_t i = 0; i + 1 < shifted.size(); i += 2)
     {
         std::swap(shifted[i], shifted[i + 1]);
     }
+    std::cout << "step 5: " << shifted << std::endl;
 
     return (shifted);
 }
@@ -124,25 +111,17 @@ std::string decrypt(const std::string &text)
 {
     std::string out = text;
 
-    // input: "prjkr"
+    // input: "upcwr"
     
     // reverse step 5: swap back.
-    // swap [0] and [1]: 'p' <-> 'r' -> "rpjkr"
-    // swap [2] and [3]: 'j' <-> 'k' -> "rpkjr"
-    // Result: "rpkjr"
+    // "upcwr" -> "puwcr"
     for (size_t i = 0; i + 1 < out.size(); i += 2)
     {
         std::swap(out[i], out[i + 1]);
     }
     
     // reverse step 4: undo third pass (odd/even positions).
-    // out = "rpkjr"
-    // i=0 (even): 'r'(17) - key(3)  = 14 -> 'o' | key = 3
-    // i=1 (odd):  'p'(15) - key(20) = -5+26 = 21 -> 'v' | key = 20
-    // i=2 (even): 'k'(10) - key(17) = -7+26 = 19 -> 't' | key = 17
-    // i=3 (odd):  'j'(9)  - key(16) = -7+26 = 19 -> 't' | key = 16
-    // i=4 (even): 'r'(17) - key(5)  = 12 -> 'm' | key = 5
-    // Result: "ovttm"
+    // "puwcr" -> "mafmm"
     for (size_t i = 0; i < out.size(); i++)
     {
         char c = out[i];
@@ -166,13 +145,7 @@ std::string decrypt(const std::string &text)
     }
 
     // reverse step 3: undo second pass - go FORWARD.
-    // out = "ovttm"
-    // i=0: 'o'(14) - key(?) | next='v'(21), key=(0*5+21+11)%26=6, dec=(14-6+26)%26=8 -> 'i'
-    // i=1: 'v'(21) - key(?) | next='t'(19), key=(5+19+11)%26=9, dec=(21-9+26)%26=12 -> 'm'
-    // i=2: 't'(19) - key(?) | next='t'(19), key=(10+19+11)%26=14, dec=(19-14+26)%26=5 -> 'f'
-    // i=3: 't'(19) - key(?) | next='m'(12), key=(15+12+11)%26=12, dec=(19-12+26)%26=7 -> 'h'
-    // i=4: 'm'(12) - key(?) | next=0, key=(20+0+11)%26=5, dec=(12-5+26)%26=7 -> 'h'
-    // result: "imfhh"
+    // "mafmm" -> "imfhh"
     for (size_t i = 0; i < out.size(); i++)
     {
         char c = out[i];
@@ -197,13 +170,7 @@ std::string decrypt(const std::string &text)
     }
 
     // reverse step 2: undo first pass.
-    // out = "imfhh"
-    // i=0: 'i'(8)  - key(5)  = 3  -> 'd' | key = 5
-    // i=1: 'm'(12) - key(12) = 0  -> 'a' | key = 12
-    // i=2: 'f'(5)  - key(19) = -14+26 = 12 -> 'm' | key = 19
-    // i=3: 'h'(7)  - key(0)  = 7  -> 'h' | key = 0
-    // i=4: 'h'(7)  - key(7)  = 0  -> 'a' | key = 7
-    // Result: "damha"
+    // "imfhh" -> "damha"
     for (size_t i = 0; i < out.size(); i++)
     {
         char c = out[i];
@@ -228,6 +195,7 @@ std::string decrypt(const std::string &text)
 
     // reverse step 1: undo the string reversal.
     // "damha" -> "ahmad"
+    // final result for "ahmad" -> "upcwr"
     std::reverse(out.begin(), out.end());
 
     return (out);

@@ -24,9 +24,9 @@ The encryption process applies 5 steps:
 Original:     ahmad
 Step 1 (rev): damha
 Step 2:       imfhh
-Step 3:       ovttm
-Step 4:       rpkjr
-Step 5 (swap):prjkr  ← Final encrypted result
+Step 3:       mafmm
+Step 4:       puwcr
+Step 5 (swap):upcwr  ← Final encrypted result
 ```
 
 ## Features
@@ -95,6 +95,11 @@ Output file: test_encrypted.txt
 
 ## Algorithm Details
 
+### Step 1: Reverse the string
+```
+std::reverse(text.begin(), text.end())
+```
+
 ### Step 2: Position-based shift
 ```
 key = (i * 7 + 5) % 26
@@ -111,6 +116,11 @@ Even: key = (i * 7 + 3) % 26
 Odd:  key = (i * 11 + 9) % 26
 ```
 
+### Step 5: Swap adjacent pairs
+```
+swap(text[i], text[i + 1])  // for i = 0, 2, 4, ...
+```
+
 ## Security Note
 
 ⚠️ **This is NOT cryptographically secure.**
@@ -119,14 +129,6 @@ This algorithm is suitable for:
 - Learning about cryptography
 - Simple text obfuscation
 - Fun/educational projects
-
-**Do NOT use for:**
-- Passwords
-- Sensitive data
-- Financial information
-- Anything requiring real security
-
-For real security, use established encryption libraries like OpenSSL with AES.
 
 ## License
 
