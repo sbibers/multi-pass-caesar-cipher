@@ -238,6 +238,10 @@ void execution(const std::string &input_file, const std::string &output_file, co
     std::string result;
     if (mode)
     {
+        if (content.empty())
+        {
+            throw std::runtime_error("Encryption failed: Input text is empty.");
+        }
         std::cout << "Encrypting..." << std::endl;
         auto start = std::chrono::high_resolution_clock::now();
         result = encrypt(content);
@@ -248,6 +252,10 @@ void execution(const std::string &input_file, const std::string &output_file, co
     }
     else
     {
+        if (content.empty())
+        {
+            throw std::runtime_error("Decryption failed: Input text is empty.");
+        }
         std::cout << "Decrypting..." <<  std::endl;
         auto start = std::chrono::high_resolution_clock::now();
         result = decrypt(content);
@@ -298,11 +306,6 @@ int main(int argc, char *argv[])
         std::string mode = argv[1];
         std::string input_file = argv[2];
         std::string content = read_file(argv[2]);
-        if (content.empty())
-        {
-            std::cerr << "Input file is empty.\n";
-            return (1);
-        }
         std::string output_file;
         
         // generate output filename with suffix before extension.
