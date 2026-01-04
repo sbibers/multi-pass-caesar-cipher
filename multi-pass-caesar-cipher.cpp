@@ -91,12 +91,15 @@ std::string encrypt(const std::string &text)
         shifted[i] = enc_pos + offset;
     }
 
-    // step 5: Swap adjacent pairs.
+    // step 5: Swap adjacent pairs (only alphabetic characters).
     // "puwcr" -> "upcwr"
     // final result for "ahmad" -> "upcwr"
     for (size_t i = 0; i + 1 < shifted.size(); i += 2)
     {
-        std::swap(shifted[i], shifted[i + 1]);
+        if (isalpha(shifted[i]) && isalpha(shifted[i + 1]))
+        {
+            std::swap(shifted[i], shifted[i + 1]);
+        }
     }
 
     return (shifted);
@@ -108,11 +111,14 @@ std::string decrypt(const std::string &text)
 
     // input: "upcwr"
     
-    // reverse step 5: swap back.
+    // reverse step 5: swap back (only alphabetic characters).
     // "upcwr" -> "puwcr"
     for (size_t i = 0; i + 1 < out.size(); i += 2)
     {
-        std::swap(out[i], out[i + 1]);
+        if (isalpha(out[i]) && isalpha(out[i + 1]))
+        {
+            std::swap(out[i], out[i + 1]);
+        }
     }
     
     // reverse step 4: undo third pass (odd/even positions).
